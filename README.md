@@ -1,20 +1,15 @@
 # Säätiöbot
 
-Twitter bot for tweeting again tweets that contain the suffix "saatio".
-
-
+Twitter bot for retweeting tweets that contain the suffix "saatio".
 
 ## Prerequisites
 
 * [docker](http://docker.io/)
-
-or
-
-* [node](https://nodejs.org/)
+* [docker-compose](https://docs.docker.com/compose/)
 
 ## Running
 
-    npm start
+    docker-compose build && docker-compose up
 
 ## Deploying
 

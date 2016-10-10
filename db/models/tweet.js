@@ -4,8 +4,8 @@ var Sequelize = require('sequelize');
 var sequelize = require('../sequelize');
 
 var Tweet = sequelize.define('tweets', {
-  id: {
-    type: Sequelize.STRING,
+  tweet_id: {
+    type: Sequelize.BIGINT,
     unique: true,
     allowNull: false
   }

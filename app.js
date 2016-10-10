@@ -16,17 +16,18 @@ function onerror(err) {
 
 var cleanTwitterData = function(result) {
   var tweets = _.map(result.data.statuses, function(item){ return item; });
-  return _.filter(tweets, function(t) { return /saatio/i.test(t.text); });
-  //tweets = _.reject(tweets, function(item) { return _.includes(excludes, item.tweet_id); });
 
-  //return tweets;
+  tweets = _.filter(tweets, function(t) { return /saatio/i.test(t.text); });
+  tweets = _.filter(tweets, function(t) { return /RT/.test(t.text); });
+
+  return tweets;
 };
 
 var createOrUpdateTweet = co.wrap(function *(tweet) {
-  var newTweet = yield db.Tweet.findOne({ where: { id: tweet.id } });
+  var newTweet = yield db.Tweet.findOne({ where: { tweet_id: tweet.id } });
 
   if (!newTweet) {
-    yield db.Tweet.create({id: tweet.id});
+    yield db.Tweet.create({tweet_id: tweet.id});
     return true;
   }
 
@@ -34,21 +35,26 @@ var createOrUpdateTweet = co.wrap(function *(tweet) {
 });
 
 function searchAndRetweet() {
-  var params = {q: 'saatio'};
+  var params = {q: 'saatio', count: 100};
 
   co(function *() {
     var result = yield twit.get('search/tweets', params);
 
     var tweets = cleanTwitterData(result);
 
-    console.log(tweets);
+    console.log('Found ' + tweets.count + ' tweets.');
 
     for (var i = 0; i < tweets.length; i++) {
       if (yield createOrUpdateTweet(tweets[i])) {
-        console.log('stored tweet: ' + tweets[i].text);
+        console.log('stored: ' + tweets[i].text);
       }
     }
   }).catch(onerror);
+
+  setTimeout(searchAndRetweet, 60 * 1000);
 }
 
-searchAndRetweet();
+
+db.sync().then(function() {
+  searchAndRetweet();
+});
