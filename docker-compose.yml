@@ -1,5 +1,19 @@
 version: '2'
 
 services:
+  db:
+    environment:
+      POSTGRES_DB: saatiobot
+      POSTGRES_PASSWORD: saatiobot
+      POSTGRES_USER: saatiobot
+    image: postgres:9.4
+    volumes:
+    - dbdata:/var/lib/postgresql/data
+
   saatiobot:
     build: .
+    environment:
+      DATABASE_URL: postgres://saatiobot:saatiobot@db/saatiobot
+
+volumes:
+  dbdata:
