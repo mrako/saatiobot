@@ -1,0 +1,6 @@
+---
+- name: Clone repository
+  git: repo=git@github.com:mrako/saatiobot.git dest={{ app_root }} accept_hostkey=yes depth=1
+
+- name: Compose build
+  command: docker-compose build chdir={{ app_root }}

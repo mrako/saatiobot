@@ -1,0 +1,14 @@
+- name: Install docker
+  shell: wget -qO- https://get.docker.com/ | sh
+
+- name: Add group rights
+  command: usermod -aG docker {{ ansible_user }}
+
+- name: Install Python and Pip
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - python
+    - python-pip
+
+- name: Install docker-compose
+  command: pip install docker-compose

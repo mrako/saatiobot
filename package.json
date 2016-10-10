@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "co": "^4.6.0",
+    "twit": "^2.2.5",
+    "twit-promise": "^2.1.0"
+  }
+}
