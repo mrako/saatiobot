@@ -18,7 +18,7 @@ var cleanTwitterData = function(result) {
   var tweets = _.map(result.data.statuses, function(item){ return item; });
 
   tweets = _.filter(tweets, function(t) { return /saatio/i.test(t.text); });
-  tweets = _.filter(tweets, function(t) { return /RT/.test(t.text); });
+  tweets = _.filter(tweets, function(t) { return !t.retweeted_status; });
 
   return tweets;
 };
@@ -35,18 +35,20 @@ var createOrUpdateTweet = co.wrap(function *(tweet) {
 });
 
 function searchAndRetweet() {
-  var params = {q: 'saatio', count: 100};
+  var search = _.join(config.SEARCH_TERMS, ' OR ');
+  console.log(search);
+  var params = {q: search, count: 100};
 
   co(function *() {
     var result = yield twit.get('search/tweets', params);
 
     var tweets = cleanTwitterData(result);
 
-    console.log('Found ' + tweets.count + ' tweets.');
+    console.log('Found ' + tweets.length + ' tweets.');
 
     for (var i = 0; i < tweets.length; i++) {
       if (yield createOrUpdateTweet(tweets[i])) {
-        console.log('stored: ' + tweets[i].text);
+        console.log(tweets[i].text);
       }
     }
   }).catch(onerror);
