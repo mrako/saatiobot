@@ -23,11 +23,20 @@ var cleanTwitterData = function(result) {
   return tweets;
 };
 
-var createOrUpdateTweet = co.wrap(function *(tweet) {
+var createTweet = co.wrap(function *(tweet) {
+  if (tweet.text) {
+    var response = yield twit.post('statuses/update', { status: tweet.text });
+  }
+});
+
+var createTweetOnlyIfNew = co.wrap(function *(tweet) {
   var newTweet = yield db.Tweet.findOne({ where: { tweet_id: tweet.id } });
 
   if (!newTweet) {
     yield db.Tweet.create({tweet_id: tweet.id});
+
+    createTweet(tweet);
+
     return true;
   }
 
@@ -46,16 +55,20 @@ function searchAndRetweet() {
 
     console.log('Found ' + tweets.length + ' tweets.');
 
-    for (var i = 0; i < tweets.length; i++) {
-      if (yield createOrUpdateTweet(tweets[i])) {
-        console.log(tweets[i].text);
+    if (tweets.length > 0) {
+
+      for (var i = 0; i < tweets.length; i++) {
+        let tweet = tweets[i];
+        
+        if (yield createTweetOnlyIfNew(tweet)) {
+          break;
+        }
       }
     }
   }).catch(onerror);
 
-  setTimeout(searchAndRetweet, 60 * 1000);
+  setTimeout(searchAndRetweet, 15 * 60 * 1000); // 15 minutes
 }
-
 
 db.sync().then(function() {
   searchAndRetweet();
