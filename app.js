@@ -25,7 +25,7 @@ var cleanTwitterData = function(result) {
 
 var createTweet = co.wrap(function *(tweet) {
   if (tweet.text) {
-    var response = yield twit.post('statuses/update', { status: tweet.text });
+    //var response = yield twit.post('statuses/update', { status: tweet.text });
   }
 });
 

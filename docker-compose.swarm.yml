@@ -1,0 +1,16 @@
+db:
+  environment:
+    POSTGRES_DB: saatiobot
+    POSTGRES_PASSWORD: saatiobot
+    POSTGRES_USER: saatiobot
+  image: postgres:9.4
+  labels:
+    io.rancher.scheduler.affinity:host_label: tebro/type=database
+  volumes:
+  - /opt/docker/saatiobot_data:/var/lib/postgresql/data
+saatiobot:
+  environment:
+    DATABASE_URL: postgres://saatiobot:saatiobot@db/saatiobot
+  image: mrako/saatiobot
+  links:
+  - db:db

@@ -14,6 +14,8 @@ services:
     build: .
     environment:
       DATABASE_URL: postgres://saatiobot:saatiobot@db/saatiobot
+    links:
+    - db:db
 
 volumes:
   dbdata:
